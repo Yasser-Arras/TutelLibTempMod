@@ -10,8 +10,8 @@ local destroyed
 
 local colorPickers = {}
 
-if game.CoreGui:FindFirstChild('TurtleUiLib') then
-    game.CoreGui:FindFirstChild('TurtleUiLib'):Destroy()
+if game.PlayerGui:FindFirstChild('TurtleUiLib') then
+    game.PlayerGui:FindFirstChild('TurtleUiLib'):Destroy()
     destroyed = true
 end
 
@@ -57,16 +57,16 @@ end
 
 local function protect_gui(obj) 
 if destroyed then
-   obj.Parent = game.CoreGui
+   obj.Parent = game.PlayerGui
    return
 end
 if syn and syn.protect_gui then
 syn.protect_gui(obj)
-obj.Parent = game.CoreGui
+obj.Parent = game.PlayerGui
 elseif PROTOSMASHER_LOADED then
 obj.Parent = get_hidden_gui()
 else
-obj.Parent = game.CoreGui
+obj.Parent = game.PlayerGui
 end
 end
 local TurtleUiLib = Instance.new("ScreenGui")
@@ -962,3 +962,4 @@ end
 end
 
 return library
+
