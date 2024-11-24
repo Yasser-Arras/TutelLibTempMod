@@ -55,25 +55,12 @@ end
 
 -- Instances:
 
-local function protect_gui(obj) 
-if destroyed then
-   obj.Parent = game.PlayerGui
-   return
-end
-if syn and syn.protect_gui then
-syn.protect_gui(obj)
-obj.Parent = game.PlayerGui
-elseif PROTOSMASHER_LOADED then
-obj.Parent = get_hidden_gui()
-else
-obj.Parent = game.PlayerGui
-end
-end
+
 local TurtleUiLib = Instance.new("ScreenGui")
 
 TurtleUiLib.Name = "TurtleUiLib"
 
-protect_gui(TurtleUiLib)
+TurtleUiLib.Parent = game.Players.LocalPlayer.PlayerGui
 
 local xOffset = 20
 
