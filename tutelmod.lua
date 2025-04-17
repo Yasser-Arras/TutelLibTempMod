@@ -10,8 +10,8 @@ local destroyed
 
 local colorPickers = {}
 
-if game.PlayerGui:FindFirstChild('TurtleUiLib') then
-    game.PlayerGui:FindFirstChild('TurtleUiLib'):Destroy()
+if game.CoreGui:FindFirstChild('TurtleUiLib') then
+    game.CoreGui:FindFirstChild('TurtleUiLib'):Destroy()
     destroyed = true
 end
 
@@ -55,12 +55,25 @@ end
 
 -- Instances:
 
-
+local function protect_gui(obj) 
+if destroyed then
+   obj.Parent = game.CoreGui
+   return
+end
+if syn and syn.protect_gui then
+syn.protect_gui(obj)
+obj.Parent = game.CoreGui
+elseif PROTOSMASHER_LOADED then
+obj.Parent = get_hidden_gui()
+else
+obj.Parent = game.CoreGui
+end
+end
 local TurtleUiLib = Instance.new("ScreenGui")
 
 TurtleUiLib.Name = "TurtleUiLib"
 
-TurtleUiLib.Parent = game.Players.LocalPlayer.PlayerGui
+protect_gui(TurtleUiLib)
 
 local xOffset = 20
 
@@ -481,151 +494,136 @@ function library:Window(name)
         end
         return slider
     end
-   function functions:Dropdown(text, buttons, callback, selective)
-    local text = text or "Dropdown"
-    local buttons = buttons or {}
-    local callback = callback or function() end
+    function functions:Dropdown(text, buttons, callback, selective)
+        local text = text or "Dropdown"
+        local buttons = buttons or {}
+        local callback = callback or function() end
 
-    local Dropdown = Instance.new("TextButton")
-    local DownSign = Instance.new("TextLabel")
-    local DropdownFrame = Instance.new("ScrollingFrame")
+        local Dropdown = Instance.new("TextButton")
+        local DownSign = Instance.new("TextLabel")
+        local DropdownFrame = Instance.new("ScrollingFrame")
 
-    sizes[winCount] = sizes[winCount] + 32
-    Window.Size = UDim2.new(0, 207, 0, sizes[winCount] + 10)
+        sizes[winCount] = sizes[winCount] + 32
+        Window.Size = UDim2.new(0, 207, 0, sizes[winCount] + 10)
 
-    listOffset[winCount] = listOffset[winCount] + 32
+        listOffset[winCount] = listOffset[winCount] + 32
 
-    Dropdown.Name = "Dropdown"
-    Dropdown.Parent = Window
-    Dropdown.BackgroundColor3 = Color3.fromRGB(53, 59, 72)
-    Dropdown.BorderColor3 = Color3.fromRGB(113, 128, 147)
-    Dropdown.Position = UDim2.new(0, 12, 0, listOffset[winCount])
-    Dropdown.Size = UDim2.new(0, 182, 0, 26)
-    Dropdown.Selected = true
-    Dropdown.Font = Enum.Font.SourceSans
-    Dropdown.Text = tostring(text)
-    Dropdown.TextColor3 = Color3.fromRGB(245, 246, 250)
-    Dropdown.TextSize = 16.000
-    Dropdown.TextStrokeTransparency = 123.000
-    Dropdown.TextWrapped = true
-    Dropdown.ZIndex = 3 + zindex
-    Dropdown.MouseButton1Up:Connect(function()
-        for i, v in pairs(dropdowns) do
-            if v ~= DropdownFrame then
+        Dropdown.Name = "Dropdown"
+        Dropdown.Parent = Window
+        Dropdown.BackgroundColor3 = Color3.fromRGB(53, 59, 72)
+        Dropdown.BorderColor3 = Color3.fromRGB(113, 128, 147)
+        Dropdown.Position = UDim2.new(0, 12, 0, listOffset[winCount])
+        Dropdown.Size = UDim2.new(0, 182, 0, 26)
+        Dropdown.Selected = true
+        Dropdown.Font = Enum.Font.SourceSans
+        Dropdown.Text = tostring(text)
+        Dropdown.TextColor3 = Color3.fromRGB(245, 246, 250)
+        Dropdown.TextSize = 16.000
+        Dropdown.TextStrokeTransparency = 123.000
+        Dropdown.TextWrapped = true
+        Dropdown.ZIndex = 3 + zindex
+        Dropdown.MouseButton1Up:Connect(function()
+            for i, v in pairs(dropdowns) do
+                if v ~= DropdownFrame then
                 v.Visible = false
                 DownSign.Rotation = 0
-            end
-        end
-        if DropdownFrame.Visible then
-            DownSign.Rotation = 0
-        else
-            DownSign.Rotation = 180
-        end
-        DropdownFrame.Visible = not DropdownFrame.Visible
-    end)
-
-    DownSign.Name = "DownSign"
-    DownSign.Parent = Dropdown
-    DownSign.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    DownSign.BackgroundTransparency = 1.000
-    DownSign.Position = UDim2.new(0, 155, 0, 2)
-    DownSign.Size = UDim2.new(0, 27, 0, 22)
-    DownSign.Font = Enum.Font.SourceSans
-    DownSign.Text = "^"
-    DownSign.TextColor3 = Color3.fromRGB(220, 221, 225)
-    DownSign.TextSize = 20.000
-    DownSign.ZIndex = 4 + zindex
-    DownSign.TextYAlignment = Enum.TextYAlignment.Bottom
-
-    DropdownFrame.Name = "DropdownFrame"
-    DropdownFrame.Parent = Dropdown
-    DropdownFrame.Active = true
-    DropdownFrame.BackgroundColor3 = Color3.fromRGB(53, 59, 72)
-    DropdownFrame.BorderColor3 = Color3.fromRGB(53, 59, 72)
-    DropdownFrame.Position = UDim2.new(0, 0, 0, 28)
-    DropdownFrame.Size = UDim2.new(0, 182, 0, 0)
-    DropdownFrame.Visible = false
-    DropdownFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-    DropdownFrame.ScrollBarThickness = 4
-    DropdownFrame.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Left
-    DropdownFrame.ZIndex = 5 + zindex
-    DropdownFrame.ScrollingDirection = Enum.ScrollingDirection.Y
-    DropdownFrame.ScrollBarImageColor3 = Color3.fromRGB(220, 221, 225)
-    table.insert(dropdowns, DropdownFrame)
-
-    local dropFunctions = {}
-    local canvasSize = 0
-
-    function dropFunctions:Button(name)
-        local name = name or ""
-        local Button_2 = Instance.new("TextButton")
-        Button_2.Name = "Button"
-        Button_2.Parent = DropdownFrame
-        Button_2.BackgroundColor3 = Color3.fromRGB(53, 59, 72)
-        Button_2.BorderColor3 = Color3.fromRGB(113, 128, 147)
-        Button_2.Position = UDim2.new(0, 6, 0, canvasSize + 1)
-        Button_2.Size = UDim2.new(0, 170, 0, 26)
-        Button_2.Selected = true
-        Button_2.Font = Enum.Font.SourceSans
-        Button_2.TextColor3 = Color3.fromRGB(245, 246, 250)
-        Button_2.TextSize = 16.000
-        Button_2.TextStrokeTransparency = 123.000
-        Button_2.ZIndex = 6 + zindex
-        Button_2.Text = name
-        Button_2.TextWrapped = true
-        canvasSize = canvasSize + 27
-        DropdownFrame.CanvasSize = UDim2.new(0, 182, 0, canvasSize + 1)
-        if #DropdownFrame:GetChildren() < 8 then
-            DropdownFrame.Size = UDim2.new(0, 182, 0, DropdownFrame.Size.Y.Offset + 27)
-        end
-        Button_2.MouseButton1Up:Connect(function()
-            callback(name)
-            DropdownFrame.Visible = false
-            if selective then
-                Dropdown.Text = name
-            end
-        end)
-    end
-
-    function dropFunctions:Remove(name)
-        local foundIt
-        for i, v in pairs(DropdownFrame:GetChildren()) do
-            if foundIt then
-                canvasSize = canvasSize - 27
-                v.Position = UDim2.new(0, 6, 0, v.Position.Y.Offset - 27)
-                DropdownFrame.CanvasSize = UDim2.new(0, 182, 0, canvasSize + 1)
-            end
-            if v.Text == name then
-                foundIt = true
-                v:Destroy()
-                if #DropdownFrame:GetChildren() < 8 then
-                    DropdownFrame.Size = UDim2.new(0, 182, 0, DropdownFrame.Size.Y.Offset - 27)
                 end
             end
-        end
-        if not foundIt then
-            warn("The button you tried to remove didn't exist!")
-        end
-    end
+            if DropdownFrame.Visible then
+                DownSign.Rotation = 0
+            else
+                DownSign.Rotation = 180
+            end
+            DropdownFrame.Visible = not DropdownFrame.Visible
+        end)
 
-    function dropFunctions:Clear()
-        for _, button in pairs(DropdownFrame:GetChildren()) do
-            if button:IsA("TextButton") then
-                button:Destroy()
+        DownSign.Name = "DownSign"
+        DownSign.Parent = Dropdown
+        DownSign.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        DownSign.BackgroundTransparency = 1.000
+        DownSign.Position = UDim2.new(0, 155, 0, 2)
+        DownSign.Size = UDim2.new(0, 27, 0, 22)
+        DownSign.Font = Enum.Font.SourceSans
+        DownSign.Text = "^"
+        DownSign.TextColor3 = Color3.fromRGB(220, 221, 225)
+        DownSign.TextSize = 20.000
+        DownSign.ZIndex = 4 + zindex
+        DownSign.TextYAlignment = Enum.TextYAlignment.Bottom
+
+        DropdownFrame.Name = "DropdownFrame"
+        DropdownFrame.Parent = Dropdown
+        DropdownFrame.Active = true
+        DropdownFrame.BackgroundColor3 = Color3.fromRGB(53, 59, 72)
+        DropdownFrame.BorderColor3 = Color3.fromRGB(53, 59, 72)
+        DropdownFrame.Position = UDim2.new(0, 0, 0, 28)
+        DropdownFrame.Size = UDim2.new(0, 182, 0, 0)
+        DropdownFrame.Visible = false
+        DropdownFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+        DropdownFrame.ScrollBarThickness = 4
+        DropdownFrame.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Left
+        DropdownFrame.ZIndex = 5 + zindex
+        DropdownFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+        DropdownFrame.ScrollBarImageColor3 = Color3.fromRGB(220, 221, 225)
+        table.insert(dropdowns, DropdownFrame)
+        local dropFunctions = {}
+        local canvasSize = 0
+        function dropFunctions:Button(name)
+            local name = name or ""
+            local Button_2 = Instance.new("TextButton")
+            Button_2.Name = "Button"
+            Button_2.Parent = DropdownFrame
+            Button_2.BackgroundColor3 = Color3.fromRGB(53, 59, 72)
+            Button_2.BorderColor3 = Color3.fromRGB(113, 128, 147)
+            Button_2.Position = UDim2.new(0, 6, 0, canvasSize + 1)
+            Button_2.Size = UDim2.new(0, 170, 0, 26)
+            Button_2.Selected = true
+            Button_2.Font = Enum.Font.SourceSans
+            Button_2.TextColor3 = Color3.fromRGB(245, 246, 250)
+            Button_2.TextSize = 16.000
+            Button_2.TextStrokeTransparency = 123.000
+            Button_2.ZIndex = 6 + zindex
+            Button_2.Text = name
+            Button_2.TextWrapped = true
+            canvasSize = canvasSize + 27
+            DropdownFrame.CanvasSize = UDim2.new(0, 182, 0, canvasSize + 1)
+            if #DropdownFrame:GetChildren() < 8 then
+            DropdownFrame.Size = UDim2.new(0, 182, 0, DropdownFrame.Size.Y.Offset + 27)
+            end
+            Button_2.MouseButton1Up:Connect(function()
+                callback(name)
+		DropdownFrame.Visible = false
+		if selective then
+		   Dropdown.Text = name
+		end
+            end)
+        end
+        function dropFunctions:Remove(name)
+            local foundIt
+            for i, v in pairs(DropdownFrame:GetChildren()) do
+                if foundIt then
+                    canvasSize = canvasSize - 27
+                    v.Position = UDim2.new(0, 6, 0, v.Position.Y.Offset - 27)
+                    DropdownFrame.CanvasSize = UDim2.new(0, 182, 0, canvasSize + 1)
+                end
+                if v.Text == name then
+                    foundIt = true
+                    v:Destroy()
+                    if #DropdownFrame:GetChildren() < 8 then
+                        DropdownFrame.Size = UDim2.new(0, 182, 0, DropdownFrame.Size.Y.Offset - 27)
+                    end
+                end
+            end
+            if not foundIt then
+                warn("The button you tried to remove didn't exist!")
             end
         end
-        canvasSize = 0
-        DropdownFrame.CanvasSize = UDim2.new(0, 182, 0, canvasSize + 1)
-        DropdownFrame.Size = UDim2.new(0, 182, 0, 0)  -- Reset dropdown frame size
+
+        for i,v in pairs(buttons) do
+            dropFunctions:Button(v)
+        end
+
+        return dropFunctions
     end
-
-    for i, v in pairs(buttons) do
-        dropFunctions:Button(v)
-    end
-
-    return dropFunctions
-end
-
     function functions:ColorPicker(name, default, callback)
         local callback = callback or function() end
 
@@ -949,4 +947,3 @@ end
 end
 
 return library
-
